@@ -1,50 +1,36 @@
-# Welcome to your Expo app 👋
+# App Mobile - Monitoramento de Escolas (Recife)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicativo mobile desenvolvido em React Native (usando Expo) como requisito da atividade de recuperação de Desenvolvimento de App Mobile Individual. O objetivo é mapear as escolas municipais do Recife integrando dados abertos com a localização do usuário.
 
-## Get started
+## Funcionalidades Implementadas
+- **Geolocalização:** Captura a localização atual do dispositivo.
+- **Integração com API Externa:** Consumo da API pública do portal Dados Recife para listar escolas municipais.
+- **Integração com Backend:** Envia as coordenadas do usuário e os dados da escola escolhida para uma API RESTful própria (Node.js).
+- **Navegação:** Utilização do Expo Router (baseado no React Navigation) para transição entre a tela principal e a tela de histórico.
 
-1. Install dependencies
+## Como configurar e rodar o projeto localmente
 
-   ```bash
-   npm install
-   ```
+### 1. Pré-requisitos
+- Node.js instalado na máquina.
+- Aplicativo **Expo Go** instalado no smartphone.
+- O servidor backend (disponível no outro repositório) precisa estar rodando na máquina.
 
-2. Start the app
+### 2. Instalação
+No terminal, dentro da pasta do projeto, instale as dependências:
+\`\`\`bash
+npm install
+\`\`\`
 
-   ```bash
-   npx expo start
-   ```
+### 3. Configuração de Rede (IMPORTANTE)
+Para que o aplicativo consiga se comunicar com o backend local, é necessário configurar o IP da sua máquina:
+1. Descubra o seu endereço IPv4 local (no Windows, use `ipconfig` no CMD).
+2. Abra os arquivos `app/(tabs)/index.tsx` e `app/(tabs)/explore.tsx`.
+3. Procure pela palavra `SEU_IP_AQUI` na URL do `fetch` e substitua pelo seu endereço IPv4.
+   - *Exemplo de como deve ficar: `http://192.168.1.15:3000/salvar`*
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 4. Executando o App
+Inicie o servidor do Expo com o comando:
+\`\`\`bash
+npx expo start
+\`\`\`
+Um QR Code será gerado no terminal. Escaneie-o com a câmera do seu celular (iOS) ou com o aplicativo Expo Go (Android) para abrir a aplicação.
