@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert } from 'react-native';
-import { Link } from 'expo-router';
 import * as Location from 'expo-location';
+import { Link } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
-  // Tipagens adicionadas para o TypeScript não reclamar
   const [location, setLocation] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -22,7 +21,7 @@ export default function HomeScreen() {
       setLocation(currentLocation.coords);
 
       try {
-        const response = await fetch('https://dados.recife.pe.gov.br/api/3/action/datastore_search?resource_id=e1850a6a-f1b5-4419-874d-bdc5f1291840&limit=10');
+        const response = await fetch('https://dados.recife.pe.gov.br/api/3/action/datastore_search?resource_id=e1850a6a-f1b5-4419-874d-bdc5f1291840&limit=5');
         const data = await response.json();
         setEscolas(data.result.records);
       } catch (error) {
@@ -33,7 +32,6 @@ export default function HomeScreen() {
     })();
   }, []);
 
-  // Tipagem 'any' adicionada no parâmetro
   const salvarNoHistorico = async (escolaSelecionada: any) => {
     if (!location) {
       Alert.alert("Aviso", "Aguarde sua localização ser carregada.");
@@ -41,42 +39,32 @@ export default function HomeScreen() {
     }
 
     try {
-      // ATENÇÃO: Coloque o seu IP real aqui
-      const response = await fetch('http://SEU_IP_AQUI:3000/salvar', {
+      const response = await fetch('http://192.168.1.14:3000/salvar', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          localizacaoUsuario: location,
-          escola: escolaSelecionada
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ localizacaoUsuario: location, escola: escolaSelecionada })
       });
 
       if (response.ok) {
-        Alert.alert("Sucesso!", "Escola e sua localização foram salvas no backend.");
+        Alert.alert("Sucesso!", "Escola salva no backend.");
       } else if (response.status === 400) {
-        Alert.alert("Aviso", "Você já salvou esta escola no seu histórico.");
+        Alert.alert("Aviso", "Você já salvou esta escola.");
       } else {
         Alert.alert("Erro", "Não foi possível salvar.");
       }
     } catch (error) {
       console.error(error);
-      Alert.alert("Erro de Conexão", "Não achou o servidor. Verifique se o IP está correto e se o backend está rodando.");
+      Alert.alert("Erro de Conexão", "Servidor não encontrado.");
     }
   };
 
-  // Tipagem '{ item: any }' adicionada
   const renderEscola = ({ item }: { item: any }) => (
     <View style={styles.card}>
       <Text style={styles.cardTitle}>{item.escola}</Text>
       <Text style={styles.cardText}>Alunos: {item.qtd_alunos}</Text>
       <Text style={styles.cardText}>Bairro: {item.bairro}</Text>
       
-      <TouchableOpacity 
-        style={styles.saveButton} 
-        onPress={() => salvarNoHistorico(item)}
-      >
+      <TouchableOpacity style={styles.saveButton} onPress={() => salvarNoHistorico(item)}>
         <Text style={styles.saveButtonText}>Salvar no Histórico</Text>
       </TouchableOpacity>
     </View>
@@ -88,30 +76,16 @@ export default function HomeScreen() {
       
       <View style={styles.locationBox}>
         <Text style={styles.sectionTitle}>Sua Localização:</Text>
-        {loading ? (
-          <ActivityIndicator size="small" color="#007AFF" />
-        ) : errorMsg ? (
-          <Text style={styles.errorText}>{errorMsg}</Text>
-        ) : location ? (
-          <Text style={styles.text}>Lat: {location.latitude.toFixed(4)} | Lon: {location.longitude.toFixed(4)}</Text>
-        ) : null}
+        {loading ? <ActivityIndicator size="small" color="#007AFF" /> : errorMsg ? <Text style={styles.errorText}>{errorMsg}</Text> : location ? <Text style={styles.text}>Lat: {location.latitude.toFixed(4)} | Lon: {location.longitude.toFixed(4)}</Text> : null}
       </View>
 
       <Text style={styles.sectionTitle}>Escolas Municipais Encontradas:</Text>
-      {loading ? (
-        <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 20 }} />
-      ) : (
-        <FlatList
-          data={escolas}
-          keyExtractor={(item) => item._id.toString()}
-          renderItem={renderEscola}
-          style={styles.list}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
+      {loading ? <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 20 }} /> : <FlatList data={escolas} keyExtractor={(item) => item._id.toString()} renderItem={renderEscola} style={styles.list} showsVerticalScrollIndicator={false} />}
 
-      <Link href="/explore" style={styles.button}>
-        <Text style={styles.buttonText}>Ver Histórico Salvo</Text>
+      <Link href="/explore" asChild>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Ver Histórico Salvo</Text>
+        </TouchableOpacity>
       </Link>
     </View>
   );

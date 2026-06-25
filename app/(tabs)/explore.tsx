@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HistoricoScreen() {
   const [historico, setHistorico] = useState<any[]>([]);
@@ -8,8 +8,7 @@ export default function HistoricoScreen() {
   const buscarHistorico = async () => {
     setLoading(true);
     try {
-      // ATENÇÃO: Coloque o seu IP real aqui
-      const response = await fetch('http://SEU_IP_AQUI:3000/historico');
+      const response = await fetch('http://192.168.1.14:3000/historico');
       
       if (response.ok) {
         const data = await response.json();
@@ -19,7 +18,7 @@ export default function HistoricoScreen() {
       }
     } catch (error) {
       console.error(error);
-      Alert.alert("Erro de Conexão", "Servidor não encontrado. O backend está rodando?");
+      Alert.alert("Erro de Conexão", "Servidor não encontrado.");
     } finally {
       setLoading(false);
     }
@@ -47,19 +46,7 @@ export default function HistoricoScreen() {
         <Text style={styles.refreshButtonText}>Atualizar Lista</Text>
       </TouchableOpacity>
 
-      {loading ? (
-        <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 20 }} />
-      ) : historico.length === 0 ? (
-        <Text style={styles.emptyText}>Nenhum registro salvo ainda.</Text>
-      ) : (
-        <FlatList
-          data={historico}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          style={styles.list}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
+      {loading ? <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 20 }} /> : historico.length === 0 ? <Text style={styles.emptyText}>Nenhum registro salvo ainda.</Text> : <FlatList data={historico} keyExtractor={(item) => item.id} renderItem={renderItem} style={styles.list} showsVerticalScrollIndicator={false} />}
     </View>
   );
 }
